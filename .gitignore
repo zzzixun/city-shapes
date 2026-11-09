@@ -2,3 +2,5 @@ cache/
 data/
 __pycache__/
 .venv/
+*.log
+!models/train.log

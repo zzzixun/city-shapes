@@ -1,0 +1,309 @@
+{
+ "daan": {
+  "found": [
+   {
+    "zh": "皇冠",
+    "conf": 0.981,
+    "jitter_conf": 0.965,
+    "jitter_top1": 1.0
+   },
+   {
+    "zh": "鯨魚",
+    "conf": 0.98,
+    "jitter_conf": 0.839,
+    "jitter_top1": 1.0
+   },
+   {
+    "zh": "狗",
+    "conf": 0.964,
+    "jitter_conf": 0.876,
+    "jitter_top1": 1.0
+   },
+   {
+    "zh": "襪子",
+    "conf": 0.987,
+    "jitter_conf": 0.965,
+    "jitter_top1": 1.0
+   },
+   {
+    "zh": "T 恤",
+    "conf": 0.969,
+    "jitter_conf": 0.943,
+    "jitter_top1": 1.0
+   },
+   {
+    "zh": "手",
+    "conf": 0.926,
+    "jitter_conf": 0.757,
+    "jitter_top1": 1.0
+   },
+   {
+    "zh": "鴨子",
+    "conf": 0.974,
+    "jitter_conf": 0.803,
+    "jitter_top1": 0.917
+   },
+   {
+    "zh": "鯊魚",
+    "conf": 0.928,
+    "jitter_conf": 0.716,
+    "jitter_top1": 1.0
+   },
+   {
+    "zh": "香菇",
+    "conf": 0.981,
+    "jitter_conf": 0.937,
+    "jitter_top1": 1.0
+   },
+   {
+    "zh": "蘋果",
+    "conf": 0.965,
+    "jitter_conf": 0.913,
+    "jitter_top1": 1.0
+   },
+   {
+    "zh": "蝸牛",
+    "conf": 0.935,
+    "jitter_conf": 0.543,
+    "jitter_top1": 0.667
+   },
+   {
+    "zh": "雲",
+    "conf": 0.98,
+    "jitter_conf": 0.933,
+    "jitter_top1": 1.0
+   },
+   {
+    "zh": "閃電",
+    "conf": 0.978,
+    "jitter_conf": 0.967,
+    "jitter_top1": 1.0
+   },
+   {
+    "zh": "西洋梨",
+    "conf": 0.979,
+    "jitter_conf": 0.945,
+    "jitter_top1": 1.0
+   },
+   {
+    "zh": "房子",
+    "conf": 0.946,
+    "jitter_conf": 0.733,
+    "jitter_top1": 0.917
+   },
+   {
+    "zh": "魚",
+    "conf": 0.902,
+    "jitter_conf": 0.776,
+    "jitter_top1": 1.0
+   },
+   {
+    "zh": "星星",
+    "conf": 0.962,
+    "jitter_conf": 0.823,
+    "jitter_top1": 1.0
+   },
+   {
+    "zh": "飛機",
+    "conf": 0.961,
+    "jitter_conf": 0.83,
+    "jitter_top1": 1.0
+   },
+   {
+    "zh": "大象",
+    "conf": 0.944,
+    "jitter_conf": 0.717,
+    "jitter_top1": 0.917
+   },
+   {
+    "zh": "燈泡",
+    "conf": 0.987,
+    "jitter_conf": 0.931,
+    "jitter_top1": 1.0
+   },
+   {
+    "zh": "兔子",
+    "conf": 0.97,
+    "jitter_conf": 0.882,
+    "jitter_top1": 1.0
+   },
+   {
+    "zh": "月亮",
+    "conf": 0.976,
+    "jitter_conf": 0.873,
+    "jitter_top1": 1.0
+   },
+   {
+    "zh": "貓",
+    "conf": 0.947,
+    "jitter_conf": 0.796,
+    "jitter_top1": 0.917
+   },
+   {
+    "zh": "鳥",
+    "conf": 0.896,
+    "jitter_conf": 0.833,
+    "jitter_top1": 1.0
+   }
+  ],
+  "null_median": 0.327,
+  "null_over_90": 0.025,
+  "null_over_90_classes": {
+   "雲": 5
+  }
+ },
+ "xinyi": {
+  "found": [
+   {
+    "zh": "西洋梨",
+    "conf": 0.976,
+    "jitter_conf": 0.844,
+    "jitter_top1": 1.0
+   },
+   {
+    "zh": "襪子",
+    "conf": 0.961,
+    "jitter_conf": 0.822,
+    "jitter_top1": 0.917
+   },
+   {
+    "zh": "閃電",
+    "conf": 0.987,
+    "jitter_conf": 0.977,
+    "jitter_top1": 1.0
+   },
+   {
+    "zh": "鯊魚",
+    "conf": 0.991,
+    "jitter_conf": 0.963,
+    "jitter_top1": 1.0
+   },
+   {
+    "zh": "T 恤",
+    "conf": 0.963,
+    "jitter_conf": 0.874,
+    "jitter_top1": 1.0
+   },
+   {
+    "zh": "大象",
+    "conf": 0.97,
+    "jitter_conf": 0.722,
+    "jitter_top1": 0.833
+   },
+   {
+    "zh": "雲",
+    "conf": 0.984,
+    "jitter_conf": 0.955,
+    "jitter_top1": 1.0
+   },
+   {
+    "zh": "鯨魚",
+    "conf": 0.994,
+    "jitter_conf": 0.822,
+    "jitter_top1": 1.0
+   },
+   {
+    "zh": "飛機",
+    "conf": 0.966,
+    "jitter_conf": 0.907,
+    "jitter_top1": 1.0
+   },
+   {
+    "zh": "皇冠",
+    "conf": 0.911,
+    "jitter_conf": 0.868,
+    "jitter_top1": 1.0
+   },
+   {
+    "zh": "香菇",
+    "conf": 0.984,
+    "jitter_conf": 0.943,
+    "jitter_top1": 1.0
+   },
+   {
+    "zh": "燈泡",
+    "conf": 0.952,
+    "jitter_conf": 0.812,
+    "jitter_top1": 1.0
+   },
+   {
+    "zh": "月亮",
+    "conf": 0.926,
+    "jitter_conf": 0.824,
+    "jitter_top1": 1.0
+   },
+   {
+    "zh": "手",
+    "conf": 0.945,
+    "jitter_conf": 0.807,
+    "jitter_top1": 0.917
+   },
+   {
+    "zh": "蝸牛",
+    "conf": 0.968,
+    "jitter_conf": 0.794,
+    "jitter_top1": 1.0
+   },
+   {
+    "zh": "房子",
+    "conf": 0.963,
+    "jitter_conf": 0.834,
+    "jitter_top1": 1.0
+   },
+   {
+    "zh": "鴨子",
+    "conf": 0.959,
+    "jitter_conf": 0.86,
+    "jitter_top1": 0.917
+   },
+   {
+    "zh": "狗",
+    "conf": 0.915,
+    "jitter_conf": 0.782,
+    "jitter_top1": 1.0
+   },
+   {
+    "zh": "魚",
+    "conf": 0.938,
+    "jitter_conf": 0.76,
+    "jitter_top1": 0.917
+   },
+   {
+    "zh": "蘋果",
+    "conf": 0.975,
+    "jitter_conf": 0.837,
+    "jitter_top1": 1.0
+   },
+   {
+    "zh": "兔子",
+    "conf": 0.971,
+    "jitter_conf": 0.765,
+    "jitter_top1": 0.917
+   },
+   {
+    "zh": "星星",
+    "conf": 0.946,
+    "jitter_conf": 0.814,
+    "jitter_top1": 1.0
+   },
+   {
+    "zh": "貓",
+    "conf": 0.9,
+    "jitter_conf": 0.69,
+    "jitter_top1": 0.917
+   },
+   {
+    "zh": "鳥",
+    "conf": 0.881,
+    "jitter_conf": 0.857,
+    "jitter_top1": 1.0
+   }
+  ],
+  "null_median": 0.31,
+  "null_over_90": 0.025,
+  "null_over_90_classes": {
+   "雲": 4,
+   "閃電": 1
+  }
+ }
+}

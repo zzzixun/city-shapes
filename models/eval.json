@@ -1,0 +1,33 @@
+{
+ "classes": [
+  "fish",
+  "whale",
+  "shark",
+  "bird",
+  "duck",
+  "cat",
+  "dog",
+  "rabbit",
+  "elephant",
+  "snail",
+  "star",
+  "house",
+  "apple",
+  "pear",
+  "mushroom",
+  "cloud",
+  "lightning",
+  "t-shirt",
+  "sock",
+  "hand",
+  "airplane",
+  "crown",
+  "light bulb",
+  "moon"
+ ],
+ "accuracy": {
+  "原圖": 0.8643541666666666,
+  "外輪廓": 0.768,
+  "方塊外輪廓": 0.54425
+ }
+}

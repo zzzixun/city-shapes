@@ -31,21 +31,54 @@
 
 [信義區結果](out/xinyi/gallery.png)
 
+## 第二階段：讓分類器當評審
+
+IoU 高不代表「看得出是什麼」。把上面用手畫範本找到的路線，交給一個用 Quick, Draw! 訓練的分類器看，有對應類別的 24 條（星星、臘腸狗、魚、房子 × 兩區 × 前三名）**只認對 13 條（54%）**。所以改成直接以「分類器認不認得出來」為目標：
+
+![大安區：分類器找到的圖案](out/daan/discover.png)
+<sub>右上角小圖是分類器實際看到的 28×28 圖</sub>
+
+1. **分類器**（`train.py`）：Google [Quick, Draw!](https://quickdraw.withgoogle.com/data) 24 類（魚、貓、狗、香菇、襪子、皇冠…），每類 12,000 張，約 40 萬參數的小 CNN，CPU 訓練約 30 分鐘
+2. **縮小風格差異**：手繪圖是隨手的線條，路線是一圈方方正正的鋸齒。訓練時 1/3 原圖、1/3 轉成「只剩外輪廓」、1/3 轉成「方塊化外輪廓」
+3. **範本從資料來**（`discover.py`）：每類自動挑 5 張「只看外輪廓也認得」的手繪圖當範本，用上面的街廓貼合找位置，再以 0.7×分類器信心 + 0.3×IoU − 鋸齒懲罰微調
+
+| 測試資料（24 類，隨機猜 4%） | 正確率 |
+|---|---|
+| 原始手繪圖 | 86% |
+| 只剩外輪廓 | 77% |
+| 外輪廓再方塊化成 7×7 | 54% |
+
+**驗證（`validate.py`）**：分類器信心是被直接最佳化的，一定偏高，所以另外做了兩個檢查：
+
+- **抖動**：路線圖小幅旋轉 ±10°、縮放 ±10%、改線寬後重新分類。平均信心從 96% 降到 85%，但 92% 以上的抖動版本仍被認成同一類（大安區的蝸牛最不穩，只剩 67%）。代表大多數結果不是剛好騙過模型的鋸齒
+- **對照組**：隨機橢圓在城市裡圈出的普通街廓塊，分類器最高信心中位數只有 32%，超過 90% 的只有 2.5%，而且幾乎都是「雲」。所以「雲」的結果不可信，其他類別的高信心有意義
+
+兩區 24 類各約 20 秒（[信義區結果](out/xinyi/discover.png)）。
+
 ## 使用
 
 ```bash
-pip install osmnx matplotlib
+python -m venv .venv && .venv\Scripts\activate
+pip install osmnx matplotlib scikit-image
+pip install torch --index-url https://download.pytorch.org/whl/cpu   # CPU 版約 1 GB
+
 python fetch.py "Da'an District, Taipei, Taiwan" daan   # 下載路網、切街廓（約 1 分鐘）
-python shapes.py daan                                    # 搜尋（約 2 分鐘）
+python shapes.py daan                                    # 手畫範本搜尋（約 2 分鐘）
+
+# 第二階段：先下載 Quick, Draw! 24 類（共 2.6 GB）到 cache/quickdraw/<類別>.npy
+#   https://storage.googleapis.com/quickdraw_dataset/full/numpy_bitmap/<類別>.npy
+python train.py              # 訓練分類器（約 30 分鐘，已附 models/qd_cnn.pt 可略過）
+python discover.py daan      # 每類找最像的路線（約 10 分鐘）
+python validate.py daan      # 抖動與對照組檢查
 ```
 
-輸出在 `out/<名稱>/`：每個圖案前三名的 GPX（可直接匯入 GPS Art、Strava、Garmin）、預覽圖 `gallery.png`、`results.json`。
+輸出在 `out/<名稱>/`：GPX（可直接匯入 GPS Art、Strava、Garmin）、預覽圖 `gallery.png` / `discover.png`、`results.json` / `discover.json`。
 
 ## 下一步
 
-- **Quick, Draw! 分類器**：用 Google 的 Quick, Draw! 手繪資料集訓練一個小型 CNN，改成「分類器認不認得出來」來評分。這樣不必事先給範本，就能反過來問「這個城市裡藏了哪些動物」
-- **處理風格差異**：手繪圖是隨手的線條，街廓輪廓是方方正正的鋸齒，要讓分類器認得「方塊版的貓」
-- **可辨識度實驗**：找人看路線猜圖案，比較 IoU 與人眼判斷的差異
+- **可辨識度實驗**：找人看路線猜圖案，比較 IoU、分類器信心和人眼判斷，看哪個指標最接近人
+- **更多「不是圖案」的訓練資料**：把隨機街廓塊當成第 25 類「什麼都不像」，讓「雲」這種容易誤判的類別也能用
+- **畫內部線條**：目前只能畫一圈外輪廓，加入折返路段才畫得出眼睛、翅膀
 - 整合回 GPS Art 網頁版的「範本」分頁
 
 ## 已知限制
