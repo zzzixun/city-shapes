@@ -41,7 +41,7 @@ NET = load_model()
 K = {c: i for i, c in enumerate(CLASSES)}
 
 
-def templates(c):
+def templates(c, n=N_TPL, max_complexity=40):
     """從 Quick, Draw! 挑出外輪廓就認得出來的手繪圖，轉成 [-1, 1] 的多邊形。"""
     a = np.load(f"{DATA}/{c}.npy", mmap_mode="r")
     imgs = np.array(a[-3000:]).reshape(-1, 28, 28)  # 取檔案最後面，和訓練資料大致錯開
@@ -57,9 +57,9 @@ def templates(c):
         xy = xy - (xy.min(0) + xy.max(0)) / 2
         xy = xy / np.abs(xy).max()
         # 太複雜（周長² / 面積 太大）的跑起來會一直鑽巷子，跳過
-        if poly.is_valid and poly.length ** 2 / poly.area < 40:
+        if poly.is_valid and poly.length ** 2 / poly.area < max_complexity:
             out.append(xy)
-        if len(out) == N_TPL:
+        if len(out) == n:
             break
     return out
 

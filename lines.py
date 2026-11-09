@@ -3,12 +3,12 @@
 做法：
   1. 粗搜擺法：街道畫成 5 m 網格做距離轉換，圖案取樣點查「離最近道路多遠」取平均（和 GPS Art 網頁版相同）
   2. 沿街道找路：圖案上每隔約 150 m 取一個路標，相鄰路標之間跑 Dijkstra，
-     路段成本 = 長度 ×（1 + (離圖案距離 / 25 m)²），越偏離圖案越貴，路線就會貼著圖案走
+     路段成本 = 長度 ×（1 + min((離圖案距離 / 25 m)², 30)），越偏離圖案越貴，路線就會貼著圖案走
   3. 雙向評分：
        漏畫 = 圖案上的點到路線的平均距離
        亂繞 = 路線上的點到圖案的平均距離
-       尖角 = 圖案的尖角（轉超過 40°）有幾成在路線 6% 圖寬以內
-     分數（越小越好）= (漏畫 + 亂繞) / 2 ÷ 圖寬 × 100 + 20 × (1 − 尖角保留率)
+       尖角 = 圖案的尖角（轉超過 40°）有幾成在路線 3% 圖寬以內
+     分數（越小越好）= (漏畫 + 亂繞) / 2 ÷ 圖寬 × 100 + 20 × (1 − 尖角保留率) + 10 × max(0, 路線長 / 圖案周長 − 1.25)
 
 用法：python lines.py daan
 輸出：out/<名稱>/lines.png、lines.json、lines/*.gpx
@@ -120,21 +120,24 @@ class Streets:
         # 每段街道離圖案的距離（兩端點與中點平均）
         p, q = self.seg[:, 0], self.seg[:, 1]
         d = sum(shapely.distance(shapely.points(v), ring) for v in (p, q, (p + q) / 2)) / 3
-        w = self.len * (1 + (d / SIGMA) ** 2) + 1e-3
+        w = self.len * (1 + np.minimum((d / SIGMA) ** 2, 30)) + 1e-3  # 加上限：遇到河流、公園時還繞得過去
         n = len(self.xy)
         G = csr_matrix((np.r_[w, w], (np.r_[self.u, self.v], np.r_[self.v, self.u])), shape=(n, n))
         wps = resample(tpl, WAYPOINT)
         nodes = [int(self.tree.nearest(Point(x, y))) for x, y in wps]
         nodes = [a for i, a in enumerate(nodes) if a != nodes[i - 1]] or nodes[:1]
-        path = [nodes[0]]
-        for a, b in zip(nodes, nodes[1:] + nodes[:1]):
-            dist, pred = dijkstra(G, indices=a, return_predecessors=True, limit=WAYPOINT * 20)
+        path, a = [nodes[0]], nodes[0]
+        for i, b in enumerate(nodes[1:] + nodes[:1]):
+            dist, pred = dijkstra(G, indices=a, return_predecessors=True, limit=WAYPOINT * 60)
             if not np.isfinite(dist[b]):
-                return None
+                if i == len(nodes) - 1:
+                    return None  # 回不到起點
+                continue  # 這個路標接不到（例如落在河裡），跳過接下一個
             seg = [b]
             while seg[-1] != a:
                 seg.append(pred[seg[-1]])
             path += seg[::-1][1:]
+            a = b
         # 去掉「走進去又原路退出來」的小尖刺
         out = []
         for k in path:
@@ -152,23 +155,26 @@ def evaluate(route, tpl, size):
     miss = shapely.distance(shapely.points(resample(tpl, 10)), rl).mean()
     wander = shapely.distance(shapely.points(resample(route[:-1], 10)), ring).mean()
     cs = corners(tpl)
-    kept = (shapely.distance(shapely.points(cs), rl) < 0.06 * size).mean() if len(cs) else 1.0
-    return (miss + wander) / 2 / size * 100 + 20 * (1 - kept), miss, wander, kept
+    kept = (shapely.distance(shapely.points(cs), rl) < 0.03 * size).mean() if len(cs) else 1.0
+    # 路線比圖案周長長太多＝有來回重跑的路段
+    ratio = rl.length / ring.length
+    return (miss + wander) / 2 / size * 100 + 20 * (1 - kept) + 10 * max(0.0, ratio - 1.25), miss, wander, kept
 
 
-def search(st, shape):
+def search(st, shape, sizes=SIZES):
     x0, y0, x1, y1 = st.bounds
     picked = []
-    for size in SIZES:
+    for size in sizes:
         cands = []
-        unit = resample(shape * (size / 2), 25)
-        cx, cy = np.meshgrid(np.arange(x0 + size / 2, x1 - size / 2, STEP), np.arange(y0 + size / 2, y1 - size / 2, STEP))
+        step = max(STEP, size / 20)  # 大圖案用粗一點的格子，搜尋量才不會暴增
+        unit = resample(shape * (size / 2), max(25, size / 40))
+        cx, cy = np.meshgrid(np.arange(x0 + size / 2, x1 - size / 2, step), np.arange(y0 + size / 2, y1 - size / 2, step))
         C = np.c_[cx.ravel(), cy.ravel()]
         for ang in ANGLES:
             a = math.radians(ang)
             R = np.array([[math.cos(a), -math.sin(a)], [math.sin(a), math.cos(a)]])
-            pts = C[:, None, :] + (unit @ R.T)[None]
-            s = st.road_dist(pts).mean(1)
+            off = unit @ R.T
+            s = np.concatenate([st.road_dist(C[i:i + 20000, None, :] + off[None]).mean(1) for i in range(0, len(C), 20000)])
             for i in np.argsort(s)[:200]:
                 cands.append((s[i], C[i, 0], C[i, 1], size, ang))
         cands.sort()
@@ -183,7 +189,8 @@ def search(st, shape):
     for _, cx, cy, size, ang in picked:
         tpl = place(shape, cx, cy, size, ang)
         r = st.route(tpl)
-        if r is not None and len(r) > 3:
+        # 跳過太多路標時會縮成一小圈，路線不到圖案周長 60% 就算失敗
+        if r is not None and len(r) > 3 and LineString(r).length > 0.6 * LineString(np.vstack([tpl, tpl[:1]])).length:
             res.append((*evaluate(r, tpl, size), r, tpl, (cx, cy, size, ang)))
     res.sort(key=lambda r: r[0])
     # 前幾名位置要分開（同一處不同大小只留最好的）
