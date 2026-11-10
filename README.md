@@ -96,6 +96,16 @@ Quick, Draw! 的 10 種動物外輪廓（貓、兔子、大象、鴨子、鯨魚
 
 [信義區結果](out/xinyi/lines.png)
 
+### 全大台北掃描：每個圖案最像的地方
+
+用 [GPS Art](https://zzzixun.github.io/gps-art/) 網頁版的「指定範圍自動生成」（多筆畫描線、沿街道找路、校正距離），在台北盆地每 2.5 km 放一個中心點（共 132 個、半徑 2 km、目標 10 km），17 個內建範本各取全區最像、彼此相距 1.5 km 以上的前 3 名（`scan_report.py`）：
+
+![全大台北掃描](out/scan/gallery.png)
+
+- **松山、中山、大安最好畫**：棋盤狀的街道又密又直，17 個圖案裡有 13 個的第 1 名在這三區；永和、板橋、三重適合笑臉、兔子、月亮這類圓形圖案
+- 最容易畫像的是愛心、蘋果、熊、月亮（漏畫 14–17 m），最難的是聖誕樹、星星：斜的尖角在棋盤狀的街道上容易被磨圓（聖誕樹的尖角只保留 73–80%）
+- 結果已放進 GPS Art 的「熱門路線」分頁，可以直接載入
+
 ## 使用
 
 ```bash
@@ -114,6 +124,7 @@ python validate.py daan      # 抖動與對照組檢查
 
 python lines.py daan         # 第三階段：用線描（約 20 秒，不需要 PyTorch）
 python fetch.py "Taipei, Taiwan" taipei && python animals.py taipei   # 動物 × 圖寬實驗（約 25 分鐘）
+python scan_report.py results.jsonl   # 整理全大台北掃描（掃描本身在瀏覽器跑 GPS Art，約 20 分鐘）
 ```
 
 輸出在 `out/<名稱>/`：GPX（可直接匯入 GPS Art、Strava、Garmin）、預覽圖 `gallery.png` / `discover.png`、`results.json` / `discover.json`。
