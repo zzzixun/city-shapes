@@ -34,9 +34,9 @@ def km_between(p, q):
     return math.hypot((p[0] - q[0]) * 110.54, (p[1] - q[1]) * 111.32 * math.cos(math.radians(p[0])))
 
 
-def district(lat, lon):
-    """用 Nominatim 反查行政區（每秒最多 1 次）"""
-    url = f"https://nominatim.openstreetmap.org/reverse?format=json&lat={lat:.5f}&lon={lon:.5f}&zoom=14&accept-language=zh-TW"
+def district(lat, lon, zoom=14):
+    """用 Nominatim 反查行政區（每秒最多 1 次）；落在公園、河邊時常查不到區名，改用較粗的層級再查一次"""
+    url = f"https://nominatim.openstreetmap.org/reverse?format=json&lat={lat:.5f}&lon={lon:.5f}&zoom={zoom}&accept-language=zh-TW"
     try:
         req = urllib.request.Request(url, headers={"User-Agent": "city-shapes-research (github.com/zzzixun/city-shapes)"})
         with urllib.request.urlopen(req, timeout=20) as r:
@@ -44,6 +44,8 @@ def district(lat, lon):
         time.sleep(1.1)
         city = a.get("city") or a.get("county") or ""
         town = a.get("suburb") or a.get("town") or a.get("city_district") or a.get("district") or ""
+        if not town and zoom > 10:
+            return district(lat, lon, 10)
         return f"{city}{town}" if town not in city else city
     except Exception:
         return ""
