@@ -2,8 +2,8 @@
 
 掃描本身在瀏覽器裡跑（重用 GPS Art 網頁版的「指定範圍自動生成」，結果和網頁一致）：
   台北盆地每 0.025°（約 2.5 km）一個中心、半徑 2 km、目標 10 km，17 個範本各取該中心的第 1 名
-用法：python scan_report.py <results.jsonl>
-輸出：out/scan/gallery.png、out/scan/<圖案>-<名次>.gpx、out/scan/best.json
+用法：python scan_report.py <results.jsonl> [輸出資料夾，預設 out/scan]
+輸出：<輸出資料夾>/gallery.png、<圖案>-<名次>.gpx、best.json
 """
 import json
 import math
@@ -22,7 +22,7 @@ import matplotlib.pyplot as plt  # noqa: E402
 
 sys.stdout.reconfigure(encoding="utf-8")
 plt.rcParams["font.family"] = ["Microsoft JhengHei", "Segoe UI Emoji", "sans-serif"]
-OUT = Path("out/scan")
+OUT = Path(sys.argv[2] if len(sys.argv) > 2 else "out/scan")
 
 
 def centroid(c):
